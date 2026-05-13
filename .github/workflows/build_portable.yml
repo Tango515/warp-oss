@@ -1,0 +1,131 @@
+name: Build Portable Packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        description: Branch, tag, or SHA to build
+        required: true
+        default: main
+        type: string
+      channel:
+        description: Release channel to package
+        required: true
+        default: oss
+        type: choice
+        options:
+          - oss
+          - local
+          - dev
+          - preview
+          - stable
+      build_windows:
+        description: Build Windows portable ZIP
+        required: true
+        default: true
+        type: boolean
+      build_macos:
+        description: Build macOS .app (universal binary)
+        required: true
+        default: true
+        type: boolean
+      windows_arch:
+        description: Windows architecture
+        required: true
+        default: x64
+        type: choice
+        options:
+          - x64
+          - arm64
+      debug_build:
+        description: Build a debug package
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  build-windows:
+    name: Build Windows Portable
+    if: ${{ inputs.build_windows }}
+    runs-on: windows-latest
+    timeout-minutes: 150
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_ref }}
+
+      - name: Prepare environment
+        uses: ./.github/actions/prepare_environment
+        with:
+          target_os: windows
+          is_self_hosted: false
+          cache_key: windows-portable-${{ inputs.windows_arch }}
+          install_release_deps: true
+
+      - name: Add arm64 target
+        if: ${{ inputs.windows_arch == 'arm64' }}
+        run: rustup target add aarch64-pc-windows-msvc
+        shell: bash
+
+      - name: Build portable package
+        shell: pwsh
+        run: |
+          $PackageArgs = @{
+            CHANNEL = '${{ inputs.channel }}'
+            ARCH = '${{ inputs.windows_arch }}'
+          }
+          if ('${{ inputs.debug_build }}' -eq 'true') {
+            $PackageArgs.DEBUG_BUILD = $true
+          }
+          ./script/windows/package_portable.ps1 @PackageArgs
+
+      - name: Upload portable package
+        uses: actions/upload-artifact@v4
+        with:
+          name: WarpOss-Portable-Windows-${{ inputs.windows_arch }}
+          path: dist/*.zip
+          if-no-files-found: error
+
+  build-macos:
+    name: Build macOS App
+    if: ${{ inputs.build_macos }}
+    runs-on: macos-latest
+    timeout-minutes: 150
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_ref }}
+
+      - name: Prepare environment
+        uses: ./.github/actions/prepare_environment
+        with:
+          target_os: macos
+          is_self_hosted: false
+          cache_key: macos-bundle
+          install_release_deps: true
+
+      - name: Install cargo-bundle
+        run: cargo install cargo-bundle --version 0.7.0
+
+      - name: Build macOS bundle
+        run: |
+          BUILD_ARGS="--channel ${{ inputs.channel }}"
+          if [ "${{ inputs.debug_build }}" = "true" ]; then
+            BUILD_ARGS="$BUILD_ARGS --debug"
+          fi
+          ./script/macos/bundle $BUILD_ARGS
+
+      - name: Package macOS app as ZIP
+        run: |
+          cd target/release-lto/bundle/osx
+          ditto -c -k --keepParent WarpOss.app ../../../WarpOss-macOS.zip
+          cd ../../..
+
+      - name: Upload macOS app
+        uses: actions/upload-artifact@v4
+        with:
+          name: WarpOss-macOS
+          path: target/WarpOss-macOS.zip
+          if-no-files-found: error
