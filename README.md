@@ -1,52 +1,31 @@
-# Warp Multilingual Local AI
+# WarpOss: Multilingual Local AI
 
-这是一个基于 [Warp 开源项目](https://github.com/warpdotdev/warp) 修改的社区 fork。上游 Warp 是一个面向开发者的终端和 Agentic Development Environment，本项目不重新复制官方介绍，建议先阅读上游仓库了解原始功能、架构和许可证。
+[简体中文](README.zh-CN.md) | English
 
-本 fork 的重点是：
-
-- 解锁并改造 AI 能力，支持接入个人或第三方 OpenAI 兼容 API。
-- 增加简体中文界面，提供中英文语言切换。
-- 保留 Warp 原有终端、智能体、第三方 CLI Agent、设置页等基础能力，并在此基础上做本地化和可配置化改造。
+WarpOss is a community fork of the [Warp open-source project](https://github.com/warpdotdev/warp). The upstream project is a terminal and Agentic Development Environment for developers. This fork keeps the upstream foundation and focuses on local AI provider configuration and Simplified Chinese localization.
 
 > [!IMPORTANT]
-> 本项目不是 Warp 官方版本，也不隶属于 Warp 官方团队。请自行承担使用、构建和发布风险，并遵守上游项目的许可证要求。
+> This project is not an official Warp release and is not affiliated with the Warp team. Use, build, and redistribute it at your own risk, and follow the upstream license requirements.
 
-## 主要改动
+## Highlights
 
-### 本地 AI Provider
+- Local and third-party OpenAI-compatible AI provider support.
+- Simplified Chinese interface with language switching.
+- Existing Warp terminal, agent, third-party CLI agent, settings, and developer workflows preserved where possible.
 
-新增 `本地 AI Provider` 设置页，可直接配置 OpenAI 兼容接口：
+## Local AI Provider
 
-- `Base URL`：例如 `https://api.example.com/v1`
-- `模型`：例如 `gpt-4`、`mimo-v2.5` 或你的服务商提供的模型名
-- `API 密钥`：用于访问个人或第三方 API
+WarpOss adds a `Local AI Provider` settings page for OpenAI-compatible endpoints:
 
-保存后，Warp 智能体相关请求会优先走你配置的本地/第三方 AI Provider，从而减少对 Warp 官方 AI 订阅入口的依赖。
+- `Base URL`: for example, `https://api.example.com/v1`
+- `Model`: for example, `gpt-4`, `mimo-v2.5`, or any model name supported by your provider
+- `API Key`: the key used by your personal or third-party AI service
 
-![本地 AI Provider](images/local-ai-provider.png)
+After saving the configuration, Warp agent requests can use your configured local or third-party provider instead of relying only on the official Warp AI subscription entry point.
 
-### 简体中文界面
+![Local AI Provider](images/local-ai-provider.png)
 
-新增语言设置页，目前支持：
-
-- English
-- 简体中文
-
-切换到简体中文后，设置页导航、部分设置内容、菜单栏和主要 AI 相关页面会显示中文。部分动态内容或上游尚未整理的文案可能仍保留英文，后续可以继续补全。
-
-![多语言设置](images/multilingual.png)
-
-## 使用方式
-
-### 配置第三方 AI
-
-1. 打开 `Settings`。
-2. 进入 `智能体` -> `本地 AI Provider`。
-3. 填写 `Base URL`、`模型` 和 `API 密钥`。
-4. 点击 `保存`。
-5. 回到 Agent 页面测试智能体能力。
-
-配置会写入 Warp 的 settings 文件中，结构类似：
+The setting is stored in Warp's settings file with a structure similar to:
 
 ```toml
 [agents.local_provider]
@@ -56,22 +35,43 @@ model = "your-model"
 api_key = "your-api-key"
 ```
 
-### 切换语言
+## Multilingual UI
 
-1. 打开 `Settings`。
-2. 进入 `语言`。
-3. 选择 `English` 或 `简体中文`。
-4. 部分文案可能需要重新打开窗口后刷新。
+WarpOss adds a language settings page. The current options are:
 
-## 构建
+- English
+- Simplified Chinese
 
-本项目仍沿用上游 Warp 的 Rust/Cargo 构建体系。首次构建前建议阅读：
+When Simplified Chinese is selected, settings navigation, many settings pages, menu items, and major AI-related pages are displayed in Chinese. Some dynamic text or upstream strings may still appear in English and can be improved over time.
+
+![Multilingual settings](images/multilingual.png)
+
+## Usage
+
+### Configure a Third-Party AI Provider
+
+1. Open `Settings`.
+2. Go to `Agent` -> `Local AI Provider`.
+3. Fill in `Base URL`, `Model`, and `API Key`.
+4. Click `Save`.
+5. Return to the Agent page and test the agent flow.
+
+### Change Language
+
+1. Open `Settings`.
+2. Go to `Language`.
+3. Select `English` or `Simplified Chinese`.
+4. Some UI text may require reopening the window to refresh.
+
+## Build
+
+WarpOss keeps the upstream Rust/Cargo build system. Before building for the first time, read:
 
 - [WARP.md](WARP.md)
 - [CONTRIBUTING.md](CONTRIBUTING.md)
-- [上游 Warp 仓库](https://github.com/warpdotdev/warp)
+- [Upstream Warp repository](https://github.com/warpdotdev/warp)
 
-常用命令：
+Common commands:
 
 ```bash
 ./script/bootstrap
@@ -79,31 +79,31 @@ api_key = "your-api-key"
 ./script/presubmit
 ```
 
-macOS 构建需要完整 Xcode、Metal Toolchain 和 Rust 环境。Windows 便携包构建可参考仓库内的 Windows packaging workflow。
+macOS builds require a full Xcode installation, the Metal toolchain, and a working Rust environment. Windows portable package builds can use the packaging workflows included in this repository.
 
-## 与上游的关系
+## Relationship to Upstream
 
-本项目来源于：
+This project is based on:
 
 <https://github.com/warpdotdev/warp>
 
-当前 fork 的目标不是替代 Warp 官方版本，而是在开源代码基础上探索：
+The goal is not to replace the official Warp release. WarpOss explores:
 
-- 更开放的 AI Provider 配置方式
-- 面向中文用户的本地化体验
-- 可自行构建和分发的社区版本
+- More open AI provider configuration
+- A localized experience for Chinese users
+- A community version that can be built and distributed independently
 
-如果你需要官方支持、官方同步更新或完整商业服务，请使用 Warp 官方版本。
+Use the official Warp release if you need official support, official cloud service compatibility, or commercial service guarantees.
 
-## 许可证
+## License
 
-本项目继承上游 Warp 的许可证结构：
+WarpOss inherits the upstream Warp license structure:
 
-- `warpui_core` 和 `warpui` crates 使用 [MIT license](LICENSE-MIT)。
-- 仓库其余代码使用 [AGPL v3](LICENSE-AGPL)。
+- `warpui_core` and `warpui` crates are licensed under the [MIT license](LICENSE-MIT).
+- The rest of the repository is licensed under [AGPL v3](LICENSE-AGPL).
 
-请在分发、修改或二次发布时遵守对应许可证。
+Follow the corresponding licenses when redistributing, modifying, or publishing derived versions.
 
-## 免责声明
+## Disclaimer
 
-本项目仅用于学习、研究和个人使用场景。项目不提供任何第三方 API Key，不代理任何模型服务，也不保证与 Warp 官方云端服务兼容。
+This project is intended for learning, research, and personal use. It does not provide third-party API keys, proxy model services, or guarantee compatibility with official Warp cloud services.
