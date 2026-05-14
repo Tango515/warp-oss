@@ -91,7 +91,7 @@ jobs:
     name: Build macOS App
     if: ${{ inputs.build_macos }}
     runs-on: macos-latest
-    timeout-minutes: 150
+    timeout-minutes: 360
 
     steps:
       - uses: actions/checkout@v4
