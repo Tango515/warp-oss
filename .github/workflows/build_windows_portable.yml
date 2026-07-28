@@ -70,7 +70,7 @@ jobs:
           ./script/windows/package_portable.ps1 @PackageArgs
 
       - name: Upload portable package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: WarpOss-Portable-Windows-${{ inputs.arch }}
           path: dist/*.zip
